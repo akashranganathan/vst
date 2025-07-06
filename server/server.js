@@ -28,7 +28,7 @@ mongoose
     console.log("✅ Connected to MongoDB Atlas");
     console.log("📂 Using DB:", mongoose.connection.name);
   })
-  .catch((err) => console.error("❌ MongoDB Error:", err));
+  .catch((err) => console.error("❌ MongoDB Error:", err.message));
 
 // Middleware
 app.use(cors());
@@ -36,29 +36,44 @@ app.use(express.json());
 
 // --- API ROUTES ---
 
-// Root route — required to prevent 502 from self-ping or direct access
+// Root route — useful for Render uptime checks
 app.get("/", (req, res) => {
   res.send("✅ VST Universe API is live on Render");
 });
 
 // Reviews
 app.get("/api/reviews", async (req, res) => {
-  const reviews = await Review.find().sort({ createdAt: -1 });
-  res.json({ reviews });
+  try {
+    const reviews = await Review.find().sort({ createdAt: -1 });
+    res.json({ reviews });
+  } catch (err) {
+    console.error("❌ Error fetching reviews:", err.message);
+    res.status(500).json({ error: "Failed to fetch reviews" });
+  }
 });
 
 app.post("/api/reviews", async (req, res) => {
-  const review = await Review.create(req.body);
-  res.status(201).json(review);
+  try {
+    const review = await Review.create(req.body);
+    res.status(201).json(review);
+  } catch (err) {
+    console.error("❌ Error saving review:", err.message);
+    res.status(500).json({ error: "Failed to save review" });
+  }
 });
 
 // Payments
 app.get("/payments", async (req, res) => {
-  const { transactionId } = req.query;
-  const matches = await Payment.find({
-    transactionId: transactionId?.trim().toLowerCase(),
-  });
-  res.json(matches);
+  try {
+    const { transactionId } = req.query;
+    const matches = await Payment.find({
+      transactionId: transactionId?.trim().toLowerCase(),
+    });
+    res.json(matches);
+  } catch (err) {
+    console.error("❌ Error fetching payments:", err.message);
+    res.status(500).json({ error: "Failed to fetch payments" });
+  }
 });
 
 app.post("/payments", async (req, res) => {
@@ -73,21 +88,22 @@ app.post("/payments", async (req, res) => {
     if (err.code === 11000) {
       res.status(409).json({ error: "Transaction ID already exists." });
     } else {
+      console.error("❌ Payment save failed:", err.message);
       res.status(500).json({ error: "Failed to save payment." });
     }
   }
 });
 
-// Serve frontend from dist (if deploying frontend via same server)
+// Serve frontend (if bundled)
 const distPath = path.resolve(__dirname, "../dist");
 app.use(express.static(distPath));
 
-// Wildcard route to support React Router (optional)
+// React Router wildcard
 app.get("/*all", (req, res) => {
   res.sendFile(path.join(distPath, "index.html"));
 });
 
-// Keep Render backend awake (ping every 5 mins)
+// Render self-ping
 setInterval(() => {
   axios
     .get("https://vst-universe.onrender.com")
@@ -95,7 +111,7 @@ setInterval(() => {
     .catch((err) => console.error("❌ Self-ping failed:", err.message));
 }, 5 * 60 * 1000);
 
-// Start server on 0.0.0.0 (required for Render)
+// Start the server
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
