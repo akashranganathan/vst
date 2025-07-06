@@ -36,7 +36,7 @@ const PricingSection: React.FC = () => {
       originalPrice: '₹ 39,999',
       price: '₹ 35,999',
       popular: true,
-      tagline: 'Ideal for serious producers'
+      tagline: 'Best for professionals'
     },
     {
       id: 'ultimate',
