@@ -26,7 +26,7 @@ mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB Atlas");
-    console.log("📂 Using DB:", mongoose.connection.name); // ← Add this
+    console.log("📂 Using DB:", mongoose.connection.name);
   })
   .catch((err) => console.error("❌ MongoDB Error:", err));
 
@@ -35,6 +35,11 @@ app.use(cors());
 app.use(express.json());
 
 // --- API ROUTES ---
+
+// Root route — required to prevent 502 from self-ping or direct access
+app.get("/", (req, res) => {
+  res.send("✅ VST Universe API is live on Render");
+});
 
 // Reviews
 app.get("/api/reviews", async (req, res) => {
@@ -73,24 +78,24 @@ app.post("/payments", async (req, res) => {
   }
 });
 
-// --- Serve frontend from dist ---
+// Serve frontend from dist (if deploying frontend via same server)
 const distPath = path.resolve(__dirname, "../dist");
 app.use(express.static(distPath));
 
-// Express 5 wildcard fix
+// Wildcard route to support React Router (optional)
 app.get("/*all", (req, res) => {
   res.sendFile(path.join(distPath, "index.html"));
 });
 
-// Optional: Keep Render awake
+// Keep Render backend awake (ping every 5 mins)
 setInterval(() => {
   axios
     .get("https://vst-universe.onrender.com")
-    .then(() => console.log("🔁 Self-ping success"))
-    .catch((err) => console.error("Ping error:", err.message));
+    .then(() => console.log("🔁 Self-ping successful"))
+    .catch((err) => console.error("❌ Self-ping failed:", err.message));
 }, 5 * 60 * 1000);
 
-// Start server
+// Start server on 0.0.0.0 (required for Render)
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
