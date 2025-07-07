@@ -55,7 +55,8 @@ const PricingSection: React.FC = () => {
     <>
       <section className="py-12 sm:py-16 lg:py-20 bg-black">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-left mb-8 sm:mb-12">
+        <div className="text-center sm:mb-12 flex flex-col items-center justify-center sm:h-[30vh]">
+
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
               Choose Your <span className="text-yellow-400">Perfect Package</span>
             </h2>
