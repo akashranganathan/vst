@@ -80,8 +80,9 @@ const ProductShowcase = forwardRef<HTMLDivElement>((_, ref) => {
           <div className="flex items-start space-x-3">
             <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 animate-bounce mt-1 flex-shrink-0" />
             <p className="text-base sm:text-lg text-gray-300 text-left leading-relaxed">
-              <span className="font-semibold text-white block mb-1">High-performance Tools</span>
-              Equip yourself with battle-tested plugins used in professional studios worldwide.
+              <span className="font-semibold text-white block mb-1">Your Music Production Hub</span>
+              Access a vast library of professional-grade tools and resources including music production DAWs, virtual instruments, sound libraries, mixing and mastering plugins, sound effects libraries, and a wide variety of loops and presets to enhance your creative workflow.
+
             </p>
           </div>
 
