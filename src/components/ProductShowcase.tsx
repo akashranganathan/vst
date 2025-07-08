@@ -1,5 +1,27 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useRef, useEffect, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
+
+const useInViewOnce = (options = {}) => {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current || hasAnimated) return;
+    const observer = new window.IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasAnimated(true);
+          observer.disconnect();
+        }
+      },
+      options
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [options, hasAnimated]);
+
+  return [ref, hasAnimated] as const;
+};
 
 const ProductShowcase = forwardRef<HTMLDivElement>((_, ref) => {
   const features = [
@@ -10,6 +32,14 @@ const ProductShowcase = forwardRef<HTMLDivElement>((_, ref) => {
     'Experimental sound design suites',
     'Royalty-free loops and hybrid presets'
   ];
+
+  // For each card, use a separate inViewOnce hook
+  const [ref1, hasAnimated1] = useInViewOnce({ threshold: 0.3 });
+  const [ref2, hasAnimated2] = useInViewOnce({ threshold: 0.3 });
+  const [ref3, hasAnimated3] = useInViewOnce({ threshold: 0.3 });
+
+  // For staggered animation
+  const delays = [0, 150, 300];
 
   return (
     <section
@@ -39,39 +69,49 @@ const ProductShowcase = forwardRef<HTMLDivElement>((_, ref) => {
           ))}
         </div>
 
-        {/* Plugin Image Showcase with fade-up animation */}
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-          <div className="flex flex-col items-start text-left animate-fadeUp">
-            <img
-              src="/img1.png"
-              alt="DAW software interface"
-              className="rounded-xl shadow-xl object-cover w-full h-52 hover:scale-105 transition-transform duration-300"
-            />
-            <p className="mt-3 text-sm text-gray-300">
-              <span className="text-yellow-400 font-semibold">Studio DAWs</span> like Ableton and Logic Pro offer endless control over every detail of your mix.
-            </p>
-          </div>
-
-          <div className="flex flex-col items-start text-left animate-fadeUp delay-100">
-            <img
-              src="/img2.png"
-              alt="Synth plugin display"
-              className="rounded-xl shadow-xl object-cover w-full h-52 hover:scale-105 transition-transform duration-300"
-            />
-            <p className="mt-3 text-sm text-gray-300">
-              <span className="text-yellow-400 font-semibold">Powerful Synths</span> such as Serum and Vital redefine modulation and expression.
-            </p>
-          </div>
-
-          <div className="flex flex-col items-start text-left animate-fadeUp delay-200">
-            <img
-              src="/img3.png"
-              alt="EQ plugin interface"
-              className="rounded-xl shadow-xl object-cover w-full h-52 hover:scale-105 transition-transform duration-300"
-            />
-            <p className="mt-3 text-sm text-gray-300">
-              <span className="text-yellow-400 font-semibold">Pro Mixing Tools</span> like FabFilter and Valhalla sculpt your tracks with clarity and depth.
-            </p>
+        {/* ================= ANIMATION DESIGN 4: Staggered Animation (Once Only) ================= */}
+        <div className="mt-16">
+          <h3 className="text-xl font-bold text-yellow-400 mb-4 text-center">Product Highlights</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {[
+              { ref: ref1, animated: hasAnimated1 },
+              { ref: ref2, animated: hasAnimated2 },
+              { ref: ref3, animated: hasAnimated3 },
+            ].map((card, idx) => {
+              const titles = [
+                'Studio DAWs',
+                'Powerful Synths',
+                'Pro Mixing Tools',
+              ];
+              const descs = [
+                'Like Ableton and Logic Pro offer endless control over every detail of your mix.',
+                'Such as Serum and Vital redefine modulation and expression.',
+                'Like FabFilter and Valhalla sculpt your tracks with clarity and depth.',
+              ];
+              const imgs = ['/img1.png', '/img2.png', '/img3.png'];
+              return (
+                <div
+                  ref={card.ref}
+                  key={titles[idx]}
+                  className="relative rounded-xl overflow-hidden shadow-lg"
+                  style={{ transitionDelay: card.animated ? `${delays[idx]}ms` : '0ms' }}
+                >
+                  <img
+                    src={imgs[idx]}
+                    alt={titles[idx]}
+                    className={`object-cover w-full h-56 transition-transform duration-700 ${card.animated ? 'scale-105' : 'scale-100'}`}
+                  />
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-6 transition-all duration-700 ${
+                      card.animated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                    }`}
+                  >
+                    <h4 className="text-xl font-bold text-yellow-400 mb-1">{titles[idx]}</h4>
+                    <p className="text-gray-100 text-sm">{descs[idx]}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -82,7 +122,6 @@ const ProductShowcase = forwardRef<HTMLDivElement>((_, ref) => {
             <p className="text-base sm:text-lg text-gray-300 text-left leading-relaxed">
               <span className="font-semibold text-white block mb-1">Your Music Production Hub</span>
               Access a vast library of professional-grade tools and resources including music production DAWs, virtual instruments, sound libraries, mixing and mastering plugins, sound effects libraries, and a wide variety of loops and presets to enhance your creative workflow.
-
             </p>
           </div>
 
