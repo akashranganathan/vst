@@ -43,9 +43,9 @@ const PricingSection: React.FC = () => {
       name: 'Ultimate Pack',
       storage: '8TB',
       originalPrice: '₹ 79,999',
-      price: '₹ 60,999',
+      price: '₹ 49,999',
       popular: false,
-      tagline: 'Most valuable pack — Limited time ₹49,999 offer!'
+      tagline: 'Most valuable pack — Limited time  offer!'
     }
   ];
 
