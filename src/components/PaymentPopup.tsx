@@ -205,7 +205,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ onClose, email, selectedPla
   animate={{ opacity: 1, x: 0 }}
   exit={{ opacity: 0, x: -60 }}
   transition={{ type: "spring", stiffness: 120, damping: 15 }}
-  className="my-8 p-6 rounded-2xl border border-gray-700/50 bg-gradient-to-br from-gray-900/80 via-gray-800/90 to-gray-900/80 shadow-2xl"
+  className="my-8 p-6  rounded-2xl border border-gray-700/50 bg-gradient-to-br from-gray-900/80 via-gray-800/90 to-gray-900/80 shadow-2xl"
 >
   {/* Header */}
   <motion.div
