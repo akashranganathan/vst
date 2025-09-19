@@ -24,7 +24,7 @@ interface Coupon {
 }
 
 const VALID_COUPONS: Coupon[] = [
-  { code: 'BLU', discount: 20, type: 'percentage', description: '20% off on all plans' },
+  { code: 'STUD20', discount: 20, type: 'percentage', description: '20% off on all plans' },
   { code: 'WELCOME10', discount: 10, type: 'percentage', description: '10% welcome discount' },
   { code: 'STUDENT15', discount: 15, type: 'percentage', description: '15% student discount' },
   { code: 'FIRST50', discount: 50, type: 'percentage', minAmount: 10000, description: '50% off for orders above ₹10,000' },
