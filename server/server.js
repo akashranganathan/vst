@@ -8,7 +8,7 @@ import axios from "axios";
 
 // Routes
 //import reviewRoutes from "./routes/reviewRoutes.js"; // Optional: if you move reviews too
-import planRouter from "./routes/planRoute.js"; // Your clean plan routes
+import planRouter from "./routes/planRoutes.js"; // Your clean plan routes
 
 // Models (only needed if you keep inline routes)
 import Review from "./models/Review.js";
@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 3500;
 // __dirname fix for ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
+const distPath = path.resolve(__dirname, "../dist");
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -102,7 +102,6 @@ app.use("/api/plans", planRouter); // This enables ALL plan endpoints
 
 // ==================== PRODUCTION: Serve Frontend ====================
 if (process.env.NODE_ENV === "production") {
-  const distPath = path.resolve(__dirname, "../dist");
   app.use(express.static(distPath));
 
   app.get("*", (req, res) => {
