@@ -17,14 +17,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const distPath = path.resolve(__dirname, "../dist");
 
-// Manual CORS headers — replaces the broken cors package
+// CORS manually
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
   );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   if (req.method === "OPTIONS") return res.status(200).end();
   next();
 });
@@ -32,14 +32,13 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 // MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.error("MongoDB Error:", err));
+await mongoose.connect(process.env.MONGODB_URI);
+console.log("MongoDB Connected");
 
-// Routes
+// Root
 app.get("/", (req, res) => res.send("VST Universe API Running"));
 
+// Reviews
 app.get("/api/reviews", async (req, res) => {
   try {
     res.json(await Review.find().sort({ createdAt: -1 }));
@@ -56,6 +55,7 @@ app.post("/api/reviews", async (req, res) => {
   }
 });
 
+// Payments
 app.get("/payments", async (req, res) => {
   try {
     const { transactionId } = req.query;
@@ -83,13 +83,10 @@ app.post("/payments", async (req, res) => {
   }
 });
 
-// Dynamic import for plan routes
-import("./routes/planRoutes.js")
-  .then((module) => {
-    app.use("/api/plans", module.default);
-    console.log("PLAN ROUTES LOADED — ADMIN WORKS NOW");
-  })
-  .catch((err) => console.error("Load error:", err));
+// DYNAMIC IMPORT AFTER EVERYTHING ELSE
+const { default: planRouter } = await import("./routes/planRoutes.js");
+app.use("/api/plans", planRouter);
+console.log("PLAN ROUTES LOADED — ADMIN WORKS");
 
 // Serve frontend
 if (process.env.NODE_ENV === "production") {
