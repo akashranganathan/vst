@@ -8,7 +8,7 @@ import axios from "axios";
 
 // Routes
 //import reviewRoutes from "./routes/reviewRoutes.js"; // Optional: if you move reviews too
-import planRouter from "./routes/planRoutes.js"; // Your clean plan routes
+import planRouter from "./routes/planRoute.js"; // Your clean plan routes
 
 // Models (only needed if you keep inline routes)
 import Review from "./models/Review.js";
