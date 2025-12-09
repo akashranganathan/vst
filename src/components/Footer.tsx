@@ -1,5 +1,5 @@
-import React from 'react';
-import { Instagram, Mail, Music } from 'lucide-react';
+import React from "react";
+import { Instagram, Mail, Music } from "lucide-react";
 
 const Footer: React.FC = () => {
   return (
@@ -26,13 +26,15 @@ const Footer: React.FC = () => {
               <Instagram className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition-transform duration-300" />
               <span className="text-base sm:text-lg">instagram</span>
             </a>
-            
+
             <a
               href="mailto:vstuniverse02@gmail.com"
               className="flex items-center space-x-3 text-gray-400 hover:text-yellow-400 transition-colors duration-300 group text-center"
             >
               <Mail className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition-transform duration-300 flex-shrink-0" />
-              <span className="text-base sm:text-lg break-all sm:break-normal">vstuniverse02@gmail.com</span>
+              <span className="text-base sm:text-lg break-all sm:break-normal">
+                vstuniverse02@gmail.com
+              </span>
             </a>
           </div>
 
@@ -41,8 +43,13 @@ const Footer: React.FC = () => {
 
           {/* Copyright */}
           <div className="text-center text-gray-500">
-            <p className="text-sm sm:text-base">&copy; 2025 VST Universe. All rights reserved.</p>
-            <p className="text-xs sm:text-sm mt-2">Your Ultimate Music Production Destination</p>
+            <p className="text-sm sm:text-base">
+              &copy; {new Date().getFullYear()} VST Universe. All rights
+              reserved.
+            </p>
+            <p className="text-xs sm:text-sm mt-2">
+              Your Ultimate Music Production Destination
+            </p>
           </div>
         </div>
       </div>

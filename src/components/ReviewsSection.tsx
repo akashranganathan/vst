@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Star, Send, User } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Star, Send, User } from "lucide-react";
 
 type Review = {
   _id: string;
@@ -11,19 +11,22 @@ type Review = {
 };
 
 const ReviewsSection: React.FC = () => {
-  const [reviewEmail, setReviewEmail] = useState('');
-  const [reviewText, setReviewText] = useState('');
+  const [reviewEmail, setReviewEmail] = useState("");
+  const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(0);
   const [reviews, setReviews] = useState<Review[]>([]);
 
-  const apiUrl = `${import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, '')}/api/reviews`;
+  const apiUrl = `${import.meta.env.VITE_API_BASE_URL.replace(
+    /\/+$/,
+    ""
+  )}/api/reviews`;
 
   useEffect(() => {
     axios
       .get(apiUrl)
       .then((response) => {
         const data = response.data;
-        console.log('Fetched reviews:', data);
+        console.log("Fetched reviews:", data);
         if (Array.isArray(data)) {
           setReviews(data);
         } else if (Array.isArray(data.reviews)) {
@@ -31,42 +34,42 @@ const ReviewsSection: React.FC = () => {
         }
       })
       .catch((error) => {
-        console.error('Failed to fetch reviews:', error);
+        console.error("Failed to fetch reviews:", error);
       });
   }, [apiUrl]);
 
   const handlePostReview = async () => {
     if (!reviewEmail.trim() || !reviewText.trim() || reviewRating === 0) {
-      alert('Please fill out all fields and select a rating.');
+      alert("Please fill out all fields and select a rating.");
       return;
     }
 
     const newReview = {
       email: reviewEmail.trim(),
       text: reviewText.trim(),
-      rating: reviewRating
+      rating: reviewRating,
     };
 
     try {
       const response = await axios.post(apiUrl, newReview);
       setReviews((prev) => [...prev, response.data]);
-      setReviewEmail('');
-      setReviewText('');
+      setReviewEmail("");
+      setReviewText("");
       setReviewRating(0);
     } catch (err) {
-      console.error('Error submitting review:', err);
-      alert('Could not post your review. Try again.');
+      console.error("Error submitting review:", err);
+      alert("Could not post your review. Try again.");
     }
   };
 
   const formatTimestamp = (createdAt: string) => {
-    return new Date(createdAt).toLocaleString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
+    return new Date(createdAt).toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
     });
   };
 
@@ -83,7 +86,9 @@ const ReviewsSection: React.FC = () => {
         {/* Review Form */}
         <div className="max-w-2xl mx-auto mb-12 sm:mb-16">
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 lg:p-8 shadow-2xl">
-            <h3 className="text-2xl font-bold text-white mb-6 text-center">Share Your Experience</h3>
+            <h3 className="text-2xl font-bold text-white mb-6 text-center">
+              Share Your Experience
+            </h3>
             <div className="space-y-6">
               <input
                 type="text"
@@ -102,13 +107,17 @@ const ReviewsSection: React.FC = () => {
               />
 
               <div>
-                <label className="block text-white text-sm font-semibold mb-2">Rate our service:</label>
+                <label className="block text-white text-sm font-semibold mb-2">
+                  Rate our service:
+                </label>
                 <div className="flex space-x-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
                       className={`w-6 h-6 cursor-pointer ${
-                        star <= reviewRating ? 'text-yellow-400 fill-current' : 'text-gray-500'
+                        star <= reviewRating
+                          ? "text-yellow-400 fill-current"
+                          : "text-gray-500"
                       }`}
                       onClick={() => setReviewRating(star)}
                     />
@@ -130,7 +139,9 @@ const ReviewsSection: React.FC = () => {
         {/* Display Reviews */}
         <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
           {reviews.length === 0 ? (
-            <p className="text-center text-gray-400 italic">No reviews yet. Be the first to share!</p>
+            <p className="text-center text-gray-400 italic">
+              No reviews yet. Be the first to share!
+            </p>
           ) : (
             reviews.map((review) => (
               <div
@@ -146,15 +157,24 @@ const ReviewsSection: React.FC = () => {
 
                   <div className="flex-1">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-1 space-y-2 sm:space-y-0">
-                      <h4 className="text-yellow-400 font-semibold text-lg break-words">{review.email}</h4>
+                      <h4 className="text-yellow-400 font-semibold text-lg break-words">
+                        {review.email}
+                      </h4>
                       <div className="flex space-x-1">
                         {[...Array(review.rating)].map((_, i) => (
-                          <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                          <Star
+                            key={i}
+                            className="w-5 h-5 text-yellow-400 fill-current"
+                          />
                         ))}
                       </div>
                     </div>
-                    <p className="text-gray-300 leading-relaxed">{review.text}</p>
-                    <p className="text-sm text-gray-400 mt-2">{formatTimestamp(review.createdAt)}</p>
+                    <p className="text-gray-300 leading-relaxed">
+                      {review.text}
+                    </p>
+                    <p className="text-sm text-gray-400 mt-2">
+                      {formatTimestamp(review.createdAt)}
+                    </p>
                   </div>
                 </div>
               </div>
