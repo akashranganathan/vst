@@ -126,54 +126,54 @@ const __dirname = path.dirname(__filename);
 const distPath = path.resolve(__dirname, "../dist");
 
 // CORS manually
-// app.use((req, res, next) => {
-//   res.setHeader("Access-Control-Allow-Origin", "*");
-//   res.setHeader(
-//     "Access-Control-Allow-Methods",
-//     "GET, POST, PUT, DELETE, OPTIONS"
-//   );
-//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//   if (req.method === "OPTIONS") return res.status(200).end();
-//   next();
-// });
-
-// CORS - dynamic and future-proof
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  const allowedOrigins = [
-    "http://localhost:5173", // Current Vite dev
-    "http://localhost:3000", // Common alternative
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:3000",
-    "https://vst-universe.onrender.com", // Your production URL
-    "https://your-custom-domain.com", // Add your future domain here
-  ];
-
-  // Allow any localhost origin (covers any port change)
-  if (
-    /^http:\/\/localhost(:\d+)?$/.test(origin) ||
-    /^http:\/\/127\.0.0.1(:\d+)?$/.test(origin)
-  ) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  } else if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS"
   );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-
-  if (req.method === "OPTIONS") {
-    res.status(200).end();
-    return;
-  }
-
+  if (req.method === "OPTIONS") return res.status(200).end();
   next();
 });
+
+// CORS - dynamic and future-proof
+// app.use((req, res, next) => {
+//   const origin = req.headers.origin;
+
+//   const allowedOrigins = [
+//     "http://localhost:5173", // Current Vite dev
+//     "http://localhost:3000", // Common alternative
+//     "http://127.0.0.1:5173",
+//     "http://127.0.0.1:3000",
+//     "https://vst-universe.onrender.com", // Your production URL
+//     "https://your-custom-domain.com", // Add your future domain here
+//   ];
+
+//   // Allow any localhost origin (covers any port change)
+//   if (
+//     /^http:\/\/localhost(:\d+)?$/.test(origin) ||
+//     /^http:\/\/127\.0.0.1(:\d+)?$/.test(origin)
+//   ) {
+//     res.setHeader("Access-Control-Allow-Origin", origin);
+//   } else if (allowedOrigins.includes(origin)) {
+//     res.setHeader("Access-Control-Allow-Origin", origin);
+//   }
+
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "GET, POST, PUT, DELETE, OPTIONS"
+//   );
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.setHeader("Access-Control-Allow-Credentials", "true");
+
+//   if (req.method === "OPTIONS") {
+//     res.status(200).end();
+//     return;
+//   }
+
+//   next();
+// });
 
 app.use(express.json());
 
