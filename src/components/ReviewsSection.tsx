@@ -76,13 +76,6 @@ const ReviewsSection: React.FC = () => {
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-black via-gray-900 to-black">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-            What Our <span className="text-yellow-400">Clients Say</span>
-          </h2>
-          <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 mx-auto rounded-full" />
-        </div>
-
         {/* Review Form */}
         <div className="max-w-2xl mx-auto mb-12 sm:mb-16">
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 lg:p-8 shadow-2xl">
@@ -134,6 +127,12 @@ const ReviewsSection: React.FC = () => {
               </button>
             </div>
           </div>
+        </div>
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+            What Our <span className="text-yellow-400">Clients Say</span>
+          </h2>
+          <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 mx-auto rounded-full" />
         </div>
 
         {/* Display Reviews */}

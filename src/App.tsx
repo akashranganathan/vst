@@ -1,22 +1,23 @@
-import AnimatedBackground from './components/AnimatedBackground';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import ProductShowcase from './components/ProductShowcase';
-import PricingSection from './components/PricingSection';
-import ReviewsSection from './components/ReviewsSection';
-import Footer from './components/Footer';
-import { useRef } from 'react';
+import AnimatedBackground from "./components/AnimatedBackground";
+import Header from "./components/Header";
+import Hero from "./components/Hero";
+import ProductShowcase from "./components/ProductShowcase";
+import PricingSection from "./components/PricingSection";
+import ReviewsSection from "./components/ReviewsSection";
+import Footer from "./components/Footer";
+import { useRef } from "react";
+import VST from "./components/VST";
 
 function App() {
   const productRef = useRef<HTMLDivElement>(null);
   const pricingRef = useRef<HTMLDivElement>(null);
 
   const scrollToProductShowcase = () => {
-    productRef.current?.scrollIntoView({ behavior: 'smooth' });
+    productRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const scrollToPricing = () => {
-    pricingRef.current?.scrollIntoView({ behavior: 'smooth' });
+    pricingRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -31,6 +32,8 @@ function App() {
         <div ref={productRef}>
           <ProductShowcase />
         </div>
+
+        <VST />
         <div ref={pricingRef}>
           <PricingSection />
         </div>

@@ -1,5 +1,5 @@
-import React from 'react';
-import { ChevronRight, Play } from 'lucide-react';
+import React from "react";
+import { ChevronRight, Play } from "lucide-react";
 
 interface HeroProps {
   scrollToPricing: () => void;
@@ -17,23 +17,27 @@ const Hero: React.FC<HeroProps> = ({ scrollToPricing, scrollToProduct }) => {
       <div className="relative z-10 text-center px-4 sm:px-6 max-w-6xl mx-auto">
         <div className="animate-fade-in-up">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 sm:mb-6 leading-tight">
-            Welcome to{' '}
+            Welcome to{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 animate-pulse block sm:inline">
               VST Universe
             </span>
           </h1>
 
           <h2 className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-semibold mb-6 sm:mb-8">
-            <span className="text-yellow-400 block sm:inline">Your Ultimate Music</span>
+            <span className="text-yellow-400 block sm:inline">
+              Your Ultimate Music
+            </span>
             <br className="hidden sm:block" />
-            <span className="text-white block sm:inline">Production Destination</span>
+            <span className="text-white block sm:inline">
+              Production Destination
+            </span>
           </h2>
 
           <div className="flex items-start justify-center mb-8 sm:mb-12">
             <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 mr-2 mt-1 animate-bounce flex-shrink-0" />
             <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-4xl leading-relaxed text-left sm:text-center">
-              Experience the power of a one-stop solution for all your music composition,
-              production, and audio post-production software needs.
+              Experience the power of a one-stop solution for all your music
+              composition, production, and audio post-production software needs.
             </p>
           </div>
 
