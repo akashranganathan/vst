@@ -28,19 +28,36 @@ const SupportTicket: React.FC = () => {
         }),
       });
 
+      // Check if response is ok
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to submit");
+        // Try to get error message from server
+        let errorMsg = "Failed to submit ticket";
+        try {
+          const errorData = await res.json();
+          errorMsg = errorData.error || errorMsg;
+        } catch {
+          // If no JSON, use status text
+          errorMsg = res.statusText || errorMsg;
+        }
+        throw new Error(errorMsg);
+      }
+
+      // Only try to parse JSON if there's content
+      let data;
+      const text = await res.text();
+      if (text) {
+        data = JSON.parse(text);
       }
 
       setSuccess(true);
+      alert("Ticket submitted successfully! Check your email.");
       setName("");
       setEmail("");
       setSubject("");
       setMessage("");
     } catch (err: any) {
-      setError(err.message || "Something went wrong. Try again.");
-      console.error(err);
+      setError(err.message || "Network error. Check console.");
+      console.error("Ticket submit error:", err);
     } finally {
       setLoading(false);
     }
