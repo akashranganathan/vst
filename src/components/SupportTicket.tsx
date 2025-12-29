@@ -50,7 +50,7 @@ const SupportTicket: React.FC = () => {
       }
 
       setSuccess(true);
-      alert("Ticket submitted successfully! Check your email.");
+      alert("Ticket submitted successfully! Check your email now.");
       setName("");
       setEmail("");
       setSubject("");
