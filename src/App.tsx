@@ -7,6 +7,7 @@ import ReviewsSection from "./components/ReviewsSection";
 import Footer from "./components/Footer";
 import { useRef } from "react";
 import VST from "./components/VST";
+import SupportTicket from "./components/SupportTicket";
 
 function App() {
   const productRef = useRef<HTMLDivElement>(null);
@@ -22,6 +23,7 @@ function App() {
 
   return (
     <div className="relative min-h-screen bg-black overflow-x-hidden">
+      <SupportTicket />
       <AnimatedBackground />
       <Header />
       <main>
