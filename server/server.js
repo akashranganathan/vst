@@ -157,7 +157,6 @@ import axios from "axios";
 import Review from "./models/Review.js";
 import Payment from "./models/Payment.js";
 import Ticket from "./models/Ticket.js";
-import { sendEmail } from "./utils/sendEmail.js";
 
 dotenv.config();
 
@@ -234,8 +233,8 @@ app.post("/payments", async (req, res) => {
   }
 });
 
-// ==================== TICKETS WITH NODEMAILER ====================
-// Handle CORS preflight for tickets
+// ==================== TICKETS ====================
+// Explicit OPTIONS handler to fix 405 on Render
 app.options("/api/tickets", (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -243,7 +242,7 @@ app.options("/api/tickets", (req, res) => {
   res.status(200).end();
 });
 
-// POST - Save ticket and send to admin via frontend EmailJS
+// POST - Save ticket (email sent from frontend via EmailJS)
 app.post("/api/tickets", async (req, res) => {
   try {
     const {
@@ -274,7 +273,7 @@ app.post("/api/tickets", async (req, res) => {
   }
 });
 
-// GET all tickets
+// GET - All tickets (for admin dashboard later)
 app.get("/api/tickets", async (req, res) => {
   try {
     const tickets = await Ticket.find().sort({ createdAt: -1 });
@@ -284,16 +283,7 @@ app.get("/api/tickets", async (req, res) => {
   }
 });
 
-app.get("/api/tickets", async (req, res) => {
-  try {
-    const tickets = await Ticket.find().sort({ createdAt: -1 });
-    res.json(tickets);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to load tickets" });
-  }
-});
-
-console.log("TICKET SYSTEM ACTIVE WITH NODEMAILER");
+console.log("TICKET SYSTEM ACTIVE (Email via EmailJS)");
 
 // Dynamic routes
 const { default: planRouter } = await import("./routes/planRoutes.js");
@@ -303,7 +293,7 @@ app.use("/api/lists", ListsRoutes);
 
 console.log("PLAN & LIST ROUTES LOADED");
 
-// PRODUCTION STATIC FILES — ABSOLUTELY LAST!
+// PRODUCTION STATIC FILES — MUST BE LAST!
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(distPath));
   app.get("*", (req, res) => res.sendFile(path.join(distPath, "index.html")));
