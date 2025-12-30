@@ -237,31 +237,87 @@ app.post("/payments", async (req, res) => {
 // ==================== TICKETS WITH NODEMAILER ====================
 app.post("/api/tickets", async (req, res) => {
   try {
-    // ... validation and ticket creation ...
+    const {
+      name = "Customer",
+      email,
+      subject = "Support Request",
+      message,
+    } = req.body;
 
+    if (!email || !message) {
+      return res.status(400).json({ error: "Email and message are required" });
+    }
+
+    // Save ticket to DB
     const ticket = await Ticket.create({
-      /* ... */
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      subject: subject.trim(),
+      message: message.trim(),
     });
 
-    // Send success immediately
+    // SEND SUCCESS RESPONSE IMMEDIATELY — fixes "pending"
     res.status(201).json({
-      message: "Ticket submitted successfully! Check your email.",
+      message:
+        "Ticket submitted successfully! Check your email for confirmation.",
       ticketId: ticket._id,
     });
 
-    // Send emails in background
+    // SEND EMAILS IN BACKGROUND (fire and forget)
     const time = new Date().toLocaleString("en-IN", {
       timeZone: "Asia/Kolkata",
     });
 
+    // Admin email
     sendEmail({
-      /* admin email */
-    }).catch(console.error);
+      to: process.env.ADMIN_EMAIL || email, // fallback to user if no admin
+      subject: `New Support Ticket from ${ticket.name} - ${subject}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border-radius: 10px;">
+          <h2 style="color: #d32f2f;">New Support Ticket</h2>
+          <p><strong>Name:</strong> ${ticket.name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <p><strong>Time:</strong> ${time}</p>
+          <hr />
+          <p><strong>Message:</strong></p>
+          <div style="background: #fff; padding: 20px; border-radius: 8px; border-left: 5px solid #d32f2f;">
+            <p style="white-space: pre-wrap;">${message.replace(
+              /\n/g,
+              "<br>"
+            )}</p>
+          </div>
+        </div>
+      `,
+    }).catch((err) => console.error("Admin email failed:", err));
+
+    // Customer email
     sendEmail({
-      /* customer email */
-    }).catch(console.error);
+      to: email,
+      subject: "Thank You! We've Received Your Support Ticket 🎧",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background: #111; color: #fff; padding: 30px; border-radius: 12px; text-align: center;">
+          <h1 style="color: #4caf50;">Thank You, ${ticket.name}! ✅</h1>
+          <p style="font-size: 18px;">Your support request has been received.</p>
+          <div style="background: #222; padding: 25px; border-radius: 10px; margin: 30px 0; font-size: 16px;">
+            <p style="font-style: italic;">"${message}"</p>
+          </div>
+          <p style="font-size: 17px;">
+            Our team will get back to you <strong>within 24-48 hours</strong>.<br>
+            Need help faster?
+          </p>
+          <a href="https://wa.me/919876543210" style="background: #25D366; color: white; padding: 15px 35px; text-decoration: none; border-radius: 50px; font-weight: bold;">
+            📱 Chat on WhatsApp
+          </a>
+          <p style="color: #aaa; margin-top: 40px;">© 2025 VST Universe</p>
+        </div>
+      `,
+    }).catch((err) => console.error("Customer email failed:", err));
   } catch (err) {
-    // ...
+    console.error("Ticket error:", err);
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Failed to submit ticket" });
+    }
   }
 });
 
