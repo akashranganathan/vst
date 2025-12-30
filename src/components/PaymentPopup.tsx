@@ -194,11 +194,6 @@
 //             <p className="text-sm text-gray-400 text-center">Scan QR or use UPI ID to pay</p>
 //           </div>
 
-           
-     
- 
- 
- 
 // {/* Coupon Section - Slide + Bounce Motion */}
 // <motion.div
 //   initial={{ opacity: 0, x: 60 }}
@@ -278,7 +273,7 @@
 //       >
 //         <Check className="w-5 h-5 text-green-400" />
 //         <p className="text-sm text-green-300">
-//           Coupon <span className="font-semibold">{appliedCoupon.code}</span> applied 🎉  
+//           Coupon <span className="font-semibold">{appliedCoupon.code}</span> applied 🎉
 //           You saved <span className="font-bold">₹{discountAmount.toLocaleString()}</span>.
 //         </p>
 //       </motion.div>
@@ -301,12 +296,6 @@
 //     )}
 //   </AnimatePresence>
 // </motion.div>
-
-
-
-
-
-
 
 //           <div className="bg-[#131A22] rounded-xl p-4 mb-6 border border-gray-700">
 //             <h3 className="text-yellow-400 font-bold text-sm mb-4">Order Summary</h3>
@@ -392,7 +381,6 @@
 // };
 
 // export default PaymentPopup;
-
 
 import React, { useState } from "react";
 import axios from "axios";

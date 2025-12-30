@@ -1,5 +1,6 @@
 // src/components/SupportTicket.tsx
 import React, { useState } from "react";
+import axios from "axios";
 import emailjs from "@emailjs/browser";
 
 const SupportTicket: React.FC = () => {
@@ -10,6 +11,11 @@ const SupportTicket: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  const apiUrl = `${import.meta.env.VITE_API_BASE_URL.replace(
+    /\/+$/,
+    ""
+  )}/api/tickets`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,42 +30,39 @@ const SupportTicket: React.FC = () => {
     setError("");
 
     try {
-      // 1. Save ticket to backend
-      const saveRes = await fetch("/api/tickets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim() || "Customer",
-          email: email.trim().toLowerCase(),
-          subject: subject.trim() || "Support Request",
-          message: message.trim(),
-        }),
+      // 1. Save ticket to backend (same as PaymentPopup)
+      await axios.post(apiUrl, {
+        name: name.trim() || "Customer",
+        email: email.trim().toLowerCase(),
+        subject: subject.trim() || "Support Request",
+        message: message.trim(),
       });
-
-      if (!saveRes.ok) throw new Error("Failed to save ticket");
 
       // 2. Send email to ADMIN only
       await emailjs.send(
-        "service_qnqab1c", // your service ID
-        "template_bodqujy", // ← NEW template ID for admin alert
+        "service_qnqab1c",
+        "template_jqfvv59", // your admin ticket template ID
         {
           name: name.trim() || "Customer",
           email: email.trim().toLowerCase(),
           subject: subject.trim() || "Support Request",
           message: message.trim(),
         },
-        "7T1_Ty4C7WFeI74xF" // your public key
+        "7T1_Ty4C7WFeI74xF"
       );
 
-      // Success — show message on screen
       setSuccess(true);
       setName("");
       setEmail("");
       setSubject("");
       setMessage("");
     } catch (err: any) {
-      console.error(err);
-      setError("Failed to send query. Try again.");
+      console.error("Ticket submission failed:", err);
+      const msg =
+        err.response?.data?.error ||
+        err.message ||
+        "Failed to send query. Please try again.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
