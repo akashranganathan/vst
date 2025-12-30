@@ -2,28 +2,27 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false, // STARTTLS
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.BREVO_SMTP_USER,
+    pass: process.env.BREVO_SMTP_PASS,
   },
 });
 
 export const sendEmail = async ({ to, subject, html }) => {
   try {
-    const mailOptions = {
-      from: `"VST Universe Support" <${
-        process.env.SUPPORT_EMAIL || process.env.EMAIL_USER
+    const info = await transporter.sendMail({
+      from: `"${process.env.BREVO_FROM_NAME || "VST Universe Support"}" <${
+        process.env.BREVO_FROM_EMAIL || process.env.BREVO_SMTP_USER
       }>`,
       to,
       subject,
       html,
-    };
-
-    await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent to ${to}`);
+    });
+    console.log("✅ Email sent via Brevo:", info.messageId);
   } catch (error) {
-    console.error(`❌ Failed to send email to ${to}:`, error.message);
-    // Do not throw - we don't want ticket creation to fail due to email issue
+    console.error("❌ Brevo email failed:", error.message);
   }
 };

@@ -237,54 +237,31 @@ app.post("/payments", async (req, res) => {
 // ==================== TICKETS WITH NODEMAILER ====================
 app.post("/api/tickets", async (req, res) => {
   try {
-    const {
-      name = "Customer",
-      email,
-      subject = "Support Request",
-      message,
-    } = req.body;
+    // ... validation and ticket creation ...
 
-    if (!email || !message) {
-      return res.status(400).json({ error: "Email and message are required" });
-    }
-
-    // Save ticket
     const ticket = await Ticket.create({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      subject: subject.trim(),
-      message: message.trim(),
+      /* ... */
     });
 
-    // SEND SUCCESS RESPONSE IMMEDIATELY
+    // Send success immediately
     res.status(201).json({
-      message: "Ticket submitted successfully! We'll email you soon.",
+      message: "Ticket submitted successfully! Check your email.",
       ticketId: ticket._id,
     });
 
-    // SEND EMAILS IN BACKGROUND (fire and forget)
+    // Send emails in background
     const time = new Date().toLocaleString("en-IN", {
       timeZone: "Asia/Kolkata",
     });
 
-    // Admin email
     sendEmail({
-      to: process.env.ADMIN_EMAIL,
-      subject: `New Ticket: ${subject} from ${ticket.name}`,
-      html: `... your admin HTML here ...`,
-    }).catch((err) => console.error("Admin email failed:", err));
-
-    // Customer email
+      /* admin email */
+    }).catch(console.error);
     sendEmail({
-      to: email,
-      subject: "Thank You! Ticket Received 🎧",
-      html: `... your customer HTML here ...`,
-    }).catch((err) => console.error("Customer email failed:", err));
+      /* customer email */
+    }).catch(console.error);
   } catch (err) {
-    console.error("Ticket error:", err);
-    if (!res.headersSent) {
-      res.status(500).json({ error: "Failed" });
-    }
+    // ...
   }
 });
 
