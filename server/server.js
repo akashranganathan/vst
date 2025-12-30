@@ -248,7 +248,7 @@ app.post("/api/tickets", async (req, res) => {
       return res.status(400).json({ error: "Email and message are required" });
     }
 
-    // Save ticket immediately
+    // Save ticket
     const ticket = await Ticket.create({
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -256,14 +256,13 @@ app.post("/api/tickets", async (req, res) => {
       message: message.trim(),
     });
 
-    // Send success response RIGHT AWAY
+    // SEND SUCCESS RESPONSE IMMEDIATELY
     res.status(201).json({
-      message:
-        "Ticket submitted successfully! Check your email for confirmation.",
+      message: "Ticket submitted successfully! We'll email you soon.",
       ticketId: ticket._id,
     });
 
-    // Fire and forget emails — don't await, don't block response
+    // SEND EMAILS IN BACKGROUND (fire and forget)
     const time = new Date().toLocaleString("en-IN", {
       timeZone: "Asia/Kolkata",
     });
@@ -271,21 +270,20 @@ app.post("/api/tickets", async (req, res) => {
     // Admin email
     sendEmail({
       to: process.env.ADMIN_EMAIL,
-      subject: `New Support Ticket from ${ticket.name} - ${subject}`,
-      html: `... your admin HTML ...`,
+      subject: `New Ticket: ${subject} from ${ticket.name}`,
+      html: `... your admin HTML here ...`,
     }).catch((err) => console.error("Admin email failed:", err));
 
     // Customer email
     sendEmail({
       to: email,
-      subject: "Thank You! We've Received Your Support Ticket 🎧",
-      html: `... your customer HTML ...`,
+      subject: "Thank You! Ticket Received 🎧",
+      html: `... your customer HTML here ...`,
     }).catch((err) => console.error("Customer email failed:", err));
   } catch (err) {
     console.error("Ticket error:", err);
-    // Only send error if response not already sent
     if (!res.headersSent) {
-      res.status(500).json({ error: "Failed to submit ticket" });
+      res.status(500).json({ error: "Failed" });
     }
   }
 });
