@@ -235,6 +235,15 @@ app.post("/payments", async (req, res) => {
 });
 
 // ==================== TICKETS WITH NODEMAILER ====================
+// Handle CORS preflight for tickets
+app.options("/api/tickets", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.status(200).end();
+});
+
+// POST - Save ticket and send to admin via frontend EmailJS
 app.post("/api/tickets", async (req, res) => {
   try {
     const {
@@ -248,7 +257,6 @@ app.post("/api/tickets", async (req, res) => {
       return res.status(400).json({ error: "Email and message are required" });
     }
 
-    // Only save to DB — no email sending here
     const ticket = await Ticket.create({
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -256,7 +264,6 @@ app.post("/api/tickets", async (req, res) => {
       message: message.trim(),
     });
 
-    // Immediate success
     res.status(201).json({
       message: "Query sent successfully!",
       ticketId: ticket._id,
@@ -264,6 +271,16 @@ app.post("/api/tickets", async (req, res) => {
   } catch (err) {
     console.error("Ticket save error:", err);
     res.status(500).json({ error: "Failed to save query" });
+  }
+});
+
+// GET all tickets
+app.get("/api/tickets", async (req, res) => {
+  try {
+    const tickets = await Ticket.find().sort({ createdAt: -1 });
+    res.json(tickets);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to load tickets" });
   }
 });
 
