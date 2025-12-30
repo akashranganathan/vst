@@ -196,3 +196,66 @@
 .animate-bounce-in {
   animation: bounce-in 0.6s ease-out;
 }
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(250, 204, 21, 0.8);
+  }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 4s infinite;
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  .hero-text {
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.6;
+  }
+
+  .feature-list-item {
+    font-size: 1.125rem; /* 18px */
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem; /* more space between items */
+  }
+
+  .feature-list {
+    padding: 0 1rem;
+  }
+
+  /* Limit text width */
+  .feature-list,
+  .hero-text {
+    max-width: 90vw;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Add CTA button */
+  .cta-button {
+    margin-top: 2rem;
+    padding: 1rem 2rem;
+    background: #f97316;
+    color: white;
+    font-weight: bold;
+    border-radius: 9999px;
+    display: inline-block;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out forwards;
+}

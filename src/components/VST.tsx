@@ -67,10 +67,11 @@ const VST: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-yellow-900/20 via-black to-black" />
         <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 via-orange-500/10 to-transparent blur-3xl" />
         <div className="relative max-w-6xl mx-auto text-center">
-          <h1 className="text-[35px] md:text-8xl lg:text-9xl font-black tracking-tighter mb-8">
+          <h1 className="text-xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-8 ">
             <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-500 bg-clip-text text-transparent">
               Explore Top VST Plugins
             </span>
+            <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 mx-auto rounded-full mt-3 sm:hidden"></div>
           </h1>
           {/* <p className="text-2xl md:text-3xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
             Next-level curated collections of groundbreaking plugins — 2025
