@@ -1,6 +1,6 @@
 // src/components/SupportTicket.tsx
 import React, { useState } from "react";
-import axios from "axios";
+import emailjs from "@emailjs/browser";
 
 const SupportTicket: React.FC = () => {
   const [name, setName] = useState("");
@@ -11,18 +11,11 @@ const SupportTicket: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  const apiUrl = `${import.meta.env.VITE_API_BASE_URL.replace(
-    /\/+$/,
-    ""
-  )}/api/tickets`;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const handleSubmit = async () => {
-    if (!email.trim()) {
-      setError("Email is required");
-      return;
-    }
-    if (!message.trim()) {
-      setError("Message is required");
+    if (!email.trim() || !message.trim()) {
+      setError("Email and message are required");
       return;
     }
 
@@ -30,130 +23,125 @@ const SupportTicket: React.FC = () => {
     setSuccess(false);
     setError("");
 
-    const ticketData = {
-      name: name.trim() || "Customer",
-      email: email.trim().toLowerCase(),
-      subject: subject.trim() || "Support Request",
-      message: message.trim(),
-    };
-
     try {
-      await axios.post(apiUrl, ticketData);
+      // 1. Save ticket to backend
+      const saveRes = await fetch("/api/tickets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim() || "Customer",
+          email: email.trim().toLowerCase(),
+          subject: subject.trim() || "Support Request",
+          message: message.trim(),
+        }),
+      });
 
+      if (!saveRes.ok) throw new Error("Failed to save ticket");
+
+      // 2. Send email to ADMIN only
+      await emailjs.send(
+        "service_qnqab1c", // your service ID
+        "template_bodqujy", // ← NEW template ID for admin alert
+        {
+          name: name.trim() || "Customer",
+          email: email.trim().toLowerCase(),
+          subject: subject.trim() || "Support Request",
+          message: message.trim(),
+        },
+        "7T1_Ty4C7WFeI74xF" // your public key
+      );
+
+      // Success — show message on screen
       setSuccess(true);
       setName("");
       setEmail("");
       setSubject("");
       setMessage("");
     } catch (err: any) {
-      console.error("Ticket submission failed:", err);
-      const msg =
-        err.response?.data?.error ||
-        err.message ||
-        "Failed to submit ticket. Please try again.";
-      setError(msg);
+      console.error(err);
+      setError("Failed to send query. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-black via-gray-900 to-black">
-      <div className="container mx-auto px-4 sm:px-6">
-        {/* Header */}
-        <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-            Need <span className="text-yellow-400">Help</span>? We're Here
+    <section className="py-16 bg-gradient-to-br from-black via-gray-900 to-black">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-5xl font-bold text-white mb-4">
+            Contact <span className="text-yellow-400">Support</span>
           </h2>
-          <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 mx-auto rounded-full" />
         </div>
 
-        {/* Success Message */}
         {success && (
-          <div className="max-w-2xl mx-auto mb-12 bg-green-900/60 border border-green-500 text-green-100 p-8 rounded-2xl text-center shadow-2xl">
-            <h3 className="text-3xl font-bold mb-4">✅ Ticket Submitted!</h3>
-            <p className="text-xl">
-              Thank you! We've received your message and sent a confirmation to{" "}
-              <strong>{email}</strong>.
-            </p>
-            <p className="mt-4 text-lg">
-              We'll get back to you within <strong>24-48 hours</strong>.
-            </p>
-          </div>
-        )}
-
-        {/* Error Message */}
-        {error && (
-          <div className="max-w-2xl mx-auto mb-12 bg-red-900/60 border border-red-500 text-red-100 p-6 rounded-2xl text-center shadow-2xl">
-            <p className="text-xl">⚠️ {error}</p>
-          </div>
-        )}
-
-        {/* Ticket Form */}
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 lg:p-8 shadow-2xl">
-            <h3 className="text-2xl font-bold text-white mb-6 text-center">
-              Raise a Support Ticket
+          <div className="max-w-2xl mx-auto mb-12 bg-green-900/60 border border-green-500 p-8 rounded-2xl text-center">
+            <h3 className="text-3xl font-bold text-green-300 mb-4">
+              Query Sent Successfully!
             </h3>
-            <div className="space-y-6">
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your Name (optional)"
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 text-base"
-              />
-
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your Email *"
-                required
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 text-base"
-              />
-
-              <input
-                type="text"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="Subject (optional)"
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 text-base"
-              />
-
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Describe your issue in detail *"
-                rows={6}
-                required
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 resize-none text-base"
-              />
-
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold rounded-lg hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-yellow-400/25 disabled:opacity-70"
-              >
-                <span>{loading ? "Submitting..." : "Submit Ticket"}</span>
-              </button>
-            </div>
+            <p className="text-xl">
+              We'll get back to you soon via email or WhatsApp.
+            </p>
           </div>
+        )}
+
+        {error && (
+          <div className="max-w-2xl mx-auto mb-12 bg-red-900/60 border border-red-500 p-6 rounded-2xl text-center">
+            <p className="text-xl text-red-300">{error}</p>
+          </div>
+        )}
+
+        <div className="max-w-2xl mx-auto">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-gray-800/80 p-10 rounded-3xl shadow-2xl"
+          >
+            <input
+              type="text"
+              placeholder="Your Name (optional)"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full mb-6 px-6 py-4 bg-gray-900 border border-gray-700 rounded-xl text-white"
+            />
+            <input
+              type="email"
+              placeholder="Your Email *"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full mb-6 px-6 py-4 bg-gray-900 border border-gray-700 rounded-xl text-white"
+            />
+            <input
+              type="text"
+              placeholder="Subject (optional)"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="w-full mb-6 px-6 py-4 bg-gray-900 border border-gray-700 rounded-xl text-white"
+            />
+            <textarea
+              placeholder="Your Message *"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              required
+              rows={8}
+              className="w-full mb-8 px-6 py-4 bg-gray-900 border border-gray-700 rounded-xl text-white resize-none"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-5 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold text-xl rounded-xl hover:scale-105 transition"
+            >
+              {loading ? "Sending..." : "Send Query"}
+            </button>
+          </form>
         </div>
 
-        {/* WhatsApp CTA */}
-        <div className="text-center mt-16">
-          <p className="text-gray-400 text-lg mb-6">
-            Need help{" "}
-            <span className="text-green-400 font-bold">right now</span>?
-          </p>
+        <div className="text-center mt-12">
           <a
             href="https://wa.me/919876543210"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-4 bg-green-600 hover:bg-green-700 px-10 py-5 rounded-full text-xl font-bold transition shadow-2xl"
+            className="inline-block bg-green-600 hover:bg-green-700 px-10 py-5 rounded-full text-xl font-bold"
           >
-            📱 Chat on WhatsApp (Fastest Response)
+            📱 Chat on WhatsApp (Faster)
           </a>
         </div>
       </div>
