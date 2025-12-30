@@ -1,5 +1,6 @@
 // src/components/SupportTicket.tsx
 import React, { useState } from "react";
+import axios from "axios";
 
 const SupportTicket: React.FC = () => {
   const [name, setName] = useState("");
@@ -10,148 +11,153 @@ const SupportTicket: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const apiUrl = `${import.meta.env.VITE_API_BASE_URL.replace(
+    /\/+$/,
+    ""
+  )}/api/tickets`;
+
+  const handleSubmit = async () => {
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+    if (!message.trim()) {
+      setError("Message is required");
+      return;
+    }
+
     setLoading(true);
     setSuccess(false);
     setError("");
 
+    const ticketData = {
+      name: name.trim() || "Customer",
+      email: email.trim().toLowerCase(),
+      subject: subject.trim() || "Support Request",
+      message: message.trim(),
+    };
+
     try {
-      const res = await fetch("/api/tickets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim() || "Customer",
-          email: email.trim().toLowerCase(),
-          subject: subject.trim() || "Support Request",
-          message: message.trim(),
-        }),
-      });
-
-      // Check if response is ok
-      if (!res.ok) {
-        // Try to get error message from server
-        let errorMsg = "Failed to submit ticket";
-        try {
-          const errorData = await res.json();
-          errorMsg = errorData.error || errorMsg;
-        } catch {
-          // If no JSON, use status text
-          errorMsg = res.statusText || errorMsg;
-        }
-        throw new Error(errorMsg);
-      }
-
-      // Only try to parse JSON if there's content
-      let data;
-      const text = await res.text();
-      if (text) {
-        data = JSON.parse(text);
-      }
+      await axios.post(apiUrl, ticketData);
 
       setSuccess(true);
-      alert("Ticket submitted successfully! Check your email now.");
       setName("");
       setEmail("");
       setSubject("");
       setMessage("");
     } catch (err: any) {
-      setError(err.message || "Network error. Check console.");
-      console.error("Ticket submit error:", err);
+      console.error("Ticket submission failed:", err);
+      const msg =
+        err.response?.data?.error ||
+        err.message ||
+        "Failed to submit ticket. Please try again.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white py-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Need Help? We're Here 🎧
-          </h1>
-          <p className="text-xl text-gray-400">
-            Raise a ticket and we'll get back to you fast
-          </p>
+    <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-black via-gray-900 to-black">
+      <div className="container mx-auto px-4 sm:px-6">
+        {/* Header */}
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+            Need <span className="text-yellow-400">Help</span>? We're Here
+          </h2>
+          <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 mx-auto rounded-full" />
         </div>
 
+        {/* Success Message */}
         {success && (
-          <div className="bg-green-900/50 border border-green-600 text-green-200 p-8 rounded-2xl mb-8 text-center">
-            <h2 className="text-3xl font-bold mb-4">✅ Ticket Submitted!</h2>
-            <p className="text-lg">
-              Thank you! We've received your request and sent a confirmation to{" "}
+          <div className="max-w-2xl mx-auto mb-12 bg-green-900/60 border border-green-500 text-green-100 p-8 rounded-2xl text-center shadow-2xl">
+            <h3 className="text-3xl font-bold mb-4">✅ Ticket Submitted!</h3>
+            <p className="text-xl">
+              Thank you! We've received your message and sent a confirmation to{" "}
               <strong>{email}</strong>.
             </p>
-            <p className="mt-4">We'll reply within 24-48 hours.</p>
+            <p className="mt-4 text-lg">
+              We'll get back to you within <strong>24-48 hours</strong>.
+            </p>
           </div>
         )}
 
+        {/* Error Message */}
         {error && (
-          <div className="bg-red-900/50 border border-red-600 text-red-200 p-6 rounded-2xl mb-8 text-center">
-            <p className="text-lg">⚠️ {error}</p>
+          <div className="max-w-2xl mx-auto mb-12 bg-red-900/60 border border-red-500 text-red-100 p-6 rounded-2xl text-center shadow-2xl">
+            <p className="text-xl">⚠️ {error}</p>
           </div>
         )}
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-gradient-to-br from-gray-800 to-gray-900 p-8 md:p-12 rounded-3xl shadow-2xl border border-gray-700"
-        >
-          <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <input
-              type="text"
-              placeholder="Your Name (optional)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-6 py-4 bg-gray-800 border border-gray-700 rounded-xl text-lg focus:outline-none focus:border-yellow-400 transition"
-            />
+        {/* Ticket Form */}
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 lg:p-8 shadow-2xl">
+            <h3 className="text-2xl font-bold text-white mb-6 text-center">
+              Raise a Support Ticket
+            </h3>
+            <div className="space-y-6">
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your Name (optional)"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 text-base"
+              />
 
-            <input
-              type="email"
-              placeholder="Your Email *"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-6 py-4 bg-gray-800 border border-gray-700 rounded-xl text-lg focus:outline-none focus:border-yellow-400 transition"
-            />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Your Email *"
+                required
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 text-base"
+              />
+
+              <input
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Subject (optional)"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 text-base"
+              />
+
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Describe your issue in detail *"
+                rows={6}
+                required
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 resize-none text-base"
+              />
+
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="w-full py-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold rounded-lg hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-yellow-400/25 disabled:opacity-70"
+              >
+                <span>{loading ? "Submitting..." : "Submit Ticket"}</span>
+              </button>
+            </div>
           </div>
+        </div>
 
-          <input
-            type="text"
-            placeholder="Subject (optional)"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            className="w-full px-6 py-4 mb-6 bg-gray-800 border border-gray-700 rounded-xl text-lg focus:outline-none focus:border-yellow-400 transition"
-          />
-
-          <textarea
-            placeholder="Describe your issue in detail * (e.g., plugin not working, installation help, etc.)"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            required
-            rows={8}
-            className="w-full px-6 py-4 mb-8 bg-gray-800 border border-gray-700 rounded-xl text-lg focus:outline-none focus:border-yellow-400 transition resize-none"
-          />
-
-          <button
-            type="submit"
-            disabled={loading || !email || !message}
-            className="w-full py-5 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold text-xl rounded-xl hover:scale-105 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg"
-          >
-            {loading ? "Submitting..." : "Submit Ticket"}
-          </button>
-        </form>
-
-        <div className="text-center mt-12">
-          <p className="text-gray-400 mb-4">Need help right now?</p>
+        {/* WhatsApp CTA */}
+        <div className="text-center mt-16">
+          <p className="text-gray-400 text-lg mb-6">
+            Need help{" "}
+            <span className="text-green-400 font-bold">right now</span>?
+          </p>
           <a
             href="https://wa.me/919876543210"
-            className="inline-flex items-center gap-3 bg-green-600 hover:bg-green-700 px-8 py-4 rounded-full text-lg font-semibold transition"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-4 bg-green-600 hover:bg-green-700 px-10 py-5 rounded-full text-xl font-bold transition shadow-2xl"
           >
             📱 Chat on WhatsApp (Fastest Response)
           </a>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

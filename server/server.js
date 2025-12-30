@@ -147,7 +147,6 @@
 //   console.log(`Server running on port ${PORT}`);
 // });
 
-
 import express from "express";
 import path from "path";
 import mongoose from "mongoose";
@@ -158,7 +157,7 @@ import axios from "axios";
 import Review from "./models/Review.js";
 import Payment from "./models/Payment.js";
 import Ticket from "./models/Ticket.js";
-import { sendEmail } from "./utils/sendEmail.js"; // Nodemailer helper
+import { sendEmail } from "./utils/sendEmail.js";
 
 dotenv.config();
 
@@ -187,7 +186,7 @@ app.use(express.json());
 await mongoose.connect(process.env.MONGODB_URI);
 console.log("MongoDB Connected");
 
-// Root
+// Root endpoint
 app.get("/", (req, res) => res.send("VST Universe API Running"));
 
 // ==================== REVIEWS ====================
@@ -249,8 +248,9 @@ app.post("/api/tickets", async (req, res) => {
       return res.status(400).json({ error: "Email and message are required" });
     }
 
-    // Save ticket to MongoDB
+    // Save ticket with name
     const ticket = await Ticket.create({
+      name: name.trim(),
       email: email.trim().toLowerCase(),
       subject: subject.trim(),
       message: message.trim(),
@@ -260,14 +260,14 @@ app.post("/api/tickets", async (req, res) => {
       timeZone: "Asia/Kolkata",
     });
 
-    // 1. Notify Admin (You)
+    // Admin notification
     await sendEmail({
       to: process.env.ADMIN_EMAIL,
-      subject: `New Support Ticket from ${name} - ${subject}`,
+      subject: `New Support Ticket from ${ticket.name} - ${subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border-radius: 10px;">
-          <h2 style="color: #d32f2f;">🚨 New Support Ticket</h2>
-          <p><strong>Name:</strong> ${name}</p>
+          <h2 style="color: #d32f2f;">New Support Ticket</h2>
+          <p><strong>Name:</strong> ${ticket.name}</p>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Subject:</strong> ${subject}</p>
           <p><strong>Time:</strong> ${time}</p>
@@ -279,33 +279,29 @@ app.post("/api/tickets", async (req, res) => {
               "<br>"
             )}</p>
           </div>
-          <p style="margin-top: 20px;">Reply to the customer directly or check the admin dashboard.</p>
+          <p style="margin-top: 20px;">Reply directly or check admin dashboard.</p>
         </div>
       `,
     });
 
-    // 2. Auto-reply to Customer
+    // Customer auto-reply
     await sendEmail({
       to: email,
       subject: "Thank You! We've Received Your Support Ticket 🎧",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background: #111; color: #fff; padding: 30px; border-radius: 12px; text-align: center;">
-          <h1 style="color: #4caf50;">Thank You, ${name}! ✅</h1>
+          <h1 style="color: #4caf50;">Thank You, ${ticket.name}! ✅</h1>
           <p style="font-size: 18px;">Your support request has been received.</p>
-          
           <div style="background: #222; padding: 25px; border-radius: 10px; margin: 30px 0; font-size: 16px;">
             <p style="font-style: italic; line-height: 1.6;">"${message}"</p>
           </div>
-          
           <p style="font-size: 17px;">
             Our team will get back to you <strong>within 24-48 hours</strong>.<br>
             Need help faster?
           </p>
-          
           <a href="https://wa.me/919876543210" style="display: inline-block; background: #25D366; color: white; padding: 15px 35px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 17px; margin: 20px 0;">
             📱 Chat on WhatsApp
           </a>
-          
           <p style="color: #aaa; margin-top: 40px; font-size: 14px;">
             © 2025 VST Universe • All Rights Reserved
           </p>
@@ -324,7 +320,6 @@ app.post("/api/tickets", async (req, res) => {
   }
 });
 
-// GET all tickets (for admin)
 app.get("/api/tickets", async (req, res) => {
   try {
     const tickets = await Ticket.find().sort({ createdAt: -1 });
@@ -344,13 +339,13 @@ app.use("/api/lists", ListsRoutes);
 
 console.log("PLAN & LIST ROUTES LOADED");
 
-// Production static files
+// PRODUCTION STATIC FILES — ABSOLUTELY LAST!
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(distPath));
   app.get("*", (req, res) => res.sendFile(path.join(distPath, "index.html")));
 }
 
-// Keep alive for Render
+// Keep alive ping
 if (process.env.NODE_ENV === "production") {
   setInterval(
     () => axios.get("https://vst-universe.onrender.com").catch(() => {}),
