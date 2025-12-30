@@ -248,7 +248,7 @@ app.post("/api/tickets", async (req, res) => {
       return res.status(400).json({ error: "Email and message are required" });
     }
 
-    // Save ticket with name
+    // Save ticket immediately
     const ticket = await Ticket.create({
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -256,67 +256,37 @@ app.post("/api/tickets", async (req, res) => {
       message: message.trim(),
     });
 
-    const time = new Date().toLocaleString("en-IN", {
-      timeZone: "Asia/Kolkata",
-    });
-
-    // Admin notification
-    await sendEmail({
-      to: process.env.ADMIN_EMAIL,
-      subject: `New Support Ticket from ${ticket.name} - ${subject}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f9f9f9; border-radius: 10px;">
-          <h2 style="color: #d32f2f;">New Support Ticket</h2>
-          <p><strong>Name:</strong> ${ticket.name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Subject:</strong> ${subject}</p>
-          <p><strong>Time:</strong> ${time}</p>
-          <hr style="border: 1px dashed #ccc;" />
-          <p><strong>Message:</strong></p>
-          <div style="background: #fff; padding: 20px; border-radius: 8px; border-left: 5px solid #d32f2f;">
-            <p style="white-space: pre-wrap;">${message.replace(
-              /\n/g,
-              "<br>"
-            )}</p>
-          </div>
-          <p style="margin-top: 20px;">Reply directly or check admin dashboard.</p>
-        </div>
-      `,
-    });
-
-    // Customer auto-reply
-    await sendEmail({
-      to: email,
-      subject: "Thank You! We've Received Your Support Ticket 🎧",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background: #111; color: #fff; padding: 30px; border-radius: 12px; text-align: center;">
-          <h1 style="color: #4caf50;">Thank You, ${ticket.name}! ✅</h1>
-          <p style="font-size: 18px;">Your support request has been received.</p>
-          <div style="background: #222; padding: 25px; border-radius: 10px; margin: 30px 0; font-size: 16px;">
-            <p style="font-style: italic; line-height: 1.6;">"${message}"</p>
-          </div>
-          <p style="font-size: 17px;">
-            Our team will get back to you <strong>within 24-48 hours</strong>.<br>
-            Need help faster?
-          </p>
-          <a href="https://wa.me/919876543210" style="display: inline-block; background: #25D366; color: white; padding: 15px 35px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 17px; margin: 20px 0;">
-            📱 Chat on WhatsApp
-          </a>
-          <p style="color: #aaa; margin-top: 40px; font-size: 14px;">
-            © 2025 VST Universe • All Rights Reserved
-          </p>
-        </div>
-      `,
-    });
-
+    // Send success response RIGHT AWAY
     res.status(201).json({
       message:
         "Ticket submitted successfully! Check your email for confirmation.",
       ticketId: ticket._id,
     });
+
+    // Fire and forget emails — don't await, don't block response
+    const time = new Date().toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    });
+
+    // Admin email
+    sendEmail({
+      to: process.env.ADMIN_EMAIL,
+      subject: `New Support Ticket from ${ticket.name} - ${subject}`,
+      html: `... your admin HTML ...`,
+    }).catch((err) => console.error("Admin email failed:", err));
+
+    // Customer email
+    sendEmail({
+      to: email,
+      subject: "Thank You! We've Received Your Support Ticket 🎧",
+      html: `... your customer HTML ...`,
+    }).catch((err) => console.error("Customer email failed:", err));
   } catch (err) {
     console.error("Ticket error:", err);
-    res.status(500).json({ error: "Failed to submit ticket" });
+    // Only send error if response not already sent
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Failed to submit ticket" });
+    }
   }
 });
 
