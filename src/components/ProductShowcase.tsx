@@ -1,5 +1,5 @@
-import React, { forwardRef, useRef, useEffect, useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import React, { forwardRef, useRef, useEffect, useState } from "react";
+import { ChevronRight } from "lucide-react";
 
 const useInViewOnce = (options = {}) => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -7,15 +7,12 @@ const useInViewOnce = (options = {}) => {
 
   useEffect(() => {
     if (!ref.current || hasAnimated) return;
-    const observer = new window.IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setHasAnimated(true);
-          observer.disconnect();
-        }
-      },
-      options
-    );
+    const observer = new window.IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setHasAnimated(true);
+        observer.disconnect();
+      }
+    }, options);
     observer.observe(ref.current);
     return () => observer.disconnect();
   }, [options, hasAnimated]);
@@ -25,12 +22,12 @@ const useInViewOnce = (options = {}) => {
 
 const ProductShowcase = forwardRef<HTMLDivElement>((_, ref) => {
   const features = [
-    'Professional DAWs for complete studio control',
-    'Next-gen synths and samplers',
-    'High-fidelity orchestral and cinematic libraries',
-    'Industry-grade mixing & mastering plugins',
-    'Experimental sound design suites',
-    'Royalty-free loops and hybrid presets'
+    "Professional DAWs for complete studio control",
+    "Next-gen synths and samplers",
+    "High-fidelity orchestral and cinematic libraries",
+    "Industry-grade mixing & mastering plugins",
+    "Experimental sound design suites",
+    "Royalty-free loops and hybrid presets",
   ];
 
   // For each card, use a separate inViewOnce hook
@@ -49,7 +46,8 @@ const ProductShowcase = forwardRef<HTMLDivElement>((_, ref) => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-            Discover Your <span className="text-yellow-400">Creative Arsenal</span>
+            Discover Your{" "}
+            <span className="text-yellow-400">Creative Arsenal</span>
           </h2>
           <p className="text-gray-300 mt-4 text-lg">
             Explore pro-level tools that power today’s top producers:
@@ -71,7 +69,9 @@ const ProductShowcase = forwardRef<HTMLDivElement>((_, ref) => {
 
         {/* ================= ANIMATION DESIGN 4: Staggered Animation (Once Only) ================= */}
         <div className="mt-16">
-          <h3 className="text-xl font-bold text-yellow-400 mb-4 text-center">Product Highlights</h3>
+          <h3 className="text-xl font-bold text-yellow-400 mb-4 text-center">
+            Product Highlights
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {[
               { ref: ref1, animated: hasAnimated1 },
@@ -79,34 +79,40 @@ const ProductShowcase = forwardRef<HTMLDivElement>((_, ref) => {
               { ref: ref3, animated: hasAnimated3 },
             ].map((card, idx) => {
               const titles = [
-                'Studio DAWs',
-                'Powerful Synths',
-                'Pro Mixing Tools',
+                "Studio DAWs",
+                "Powerful Synths",
+                "Pro Mixing Tools",
               ];
               const descs = [
-                'Like Ableton and Logic Pro offer endless control over every detail of your mix.',
-                'Such as Serum and Vital redefine modulation and expression.',
-                'Like FabFilter and Valhalla sculpt your tracks with clarity and depth.',
+                "Like Ableton and Logic Pro offer endless control over every detail of your mix.",
+                "Such as Serum and Vital redefine modulation and expression.",
+                "Like FabFilter and Valhalla sculpt your tracks with clarity and depth.",
               ];
-              const imgs = ['/img1.png', '/img2.png', '/img3.png'];
+              const imgs = ["/img1.png", "/img2.png", "/img3.png"];
               return (
                 <div
                   ref={card.ref}
                   key={titles[idx]}
                   className="relative rounded-xl overflow-hidden shadow-lg"
-                  style={{ transitionDelay: card.animated ? `${delays[idx]}ms` : '0ms' }}
+                  style={{
+                    transitionDelay: card.animated ? `${delays[idx]}ms` : "0ms",
+                  }}
                 >
                   <img
                     src={imgs[idx]}
                     alt={titles[idx]}
-                    className={`object-cover w-full h-56 transition-transform duration-700 ${card.animated ? 'scale-105' : 'scale-100'}`}
+                    className={`object-cover w-full h-56 transition-transform duration-700 ${card.animated ? "scale-105" : "scale-100"}`}
                   />
                   <div
                     className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-6 transition-all duration-700 ${
-                      card.animated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                      card.animated
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-8"
                     }`}
                   >
-                    <h4 className="text-xl font-bold text-yellow-400 mb-1">{titles[idx]}</h4>
+                    <h4 className="text-xl font-bold text-yellow-400 mb-1">
+                      {titles[idx]}
+                    </h4>
                     <p className="text-gray-100 text-sm">{descs[idx]}</p>
                   </div>
                 </div>
@@ -120,15 +126,25 @@ const ProductShowcase = forwardRef<HTMLDivElement>((_, ref) => {
           <div className="flex items-start space-x-3">
             <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 animate-bounce mt-1 flex-shrink-0" />
             <p className="text-base sm:text-lg text-gray-300 text-left leading-relaxed">
-              <span className="font-semibold text-white block mb-1">Your Music Production Hub</span>
-              Access a vast library of professional-grade tools and resources including music production DAWs, virtual instruments, sound libraries, mixing and mastering plugins, sound effects libraries, and a wide variety of loops and presets to enhance your creative workflow.
+              <span className="font-semibold text-white block mb-1">
+                Your Music Production Hub
+              </span>
+              Access a vast library of professional-grade tools and resources
+              including music production DAWs, virtual instruments, sound
+              libraries, mixing and mastering plugins, sound effects libraries,
+              and a wide variety of loops and presets to enhance your creative
+              workflow.
             </p>
           </div>
 
           <div className="flex items-start space-x-3">
             <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 animate-bounce mt-1 flex-shrink-0" />
             <p className="text-base sm:text-lg text-gray-300 text-left leading-relaxed">
-              Personalized consultation is available <span className="text-yellow-400 font-medium">free of charge</span> to ensure you pick the perfect tools.
+              Personalized consultation is available{" "}
+              <span className="text-yellow-400 font-medium">
+                free of charge
+              </span>{" "}
+              to ensure you pick the perfect tools.
             </p>
           </div>
         </div>

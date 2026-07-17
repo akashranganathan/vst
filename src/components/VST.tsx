@@ -22,7 +22,7 @@ const VST: React.FC = () => {
 
   const apiUrl = `${import.meta.env.VITE_API_BASE_URL?.replace(
     /\/+$/,
-    ""
+    "",
   )}/api/lists`;
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const VST: React.FC = () => {
       try {
         const res = await axios.get(apiUrl);
         const sortedSections = (res.data.sections as Section[]).sort(
-          (a: Section, b: Section) => a.order - b.order
+          (a: Section, b: Section) => a.order - b.order,
         );
         setSections(sortedSections);
         if (sortedSections.length > 0) {

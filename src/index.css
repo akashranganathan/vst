@@ -59,7 +59,7 @@
 }
 
 /* Custom scrollbar */
-::-webkit-scrollbar {
+<!-- ::-webkit-scrollbar {
   width: 6px;
 }
 
@@ -75,12 +75,14 @@
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #f59e0b, #d97706);
 }
+-->
 
 /* Selection color */
-::selection {
+<!-- ::selection {
   background-color: rgba(251, 191, 36, 0.3);
   color: white;
 }
+-->
 
 /* Prevent horizontal scroll */
 * {

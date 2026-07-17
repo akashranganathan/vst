@@ -18,7 +18,7 @@ const ReviewsSection: React.FC = () => {
 
   const apiUrl = `${import.meta.env.VITE_API_BASE_URL.replace(
     /\/+$/,
-    ""
+    "",
   )}/api/reviews`;
 
   useEffect(() => {

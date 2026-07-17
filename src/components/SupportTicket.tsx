@@ -20,7 +20,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ onClose }) => {
 
   const apiUrl = `${import.meta.env.VITE_API_BASE_URL?.replace(
     /\/+$/,
-    ""
+    "",
   )}/api/tickets`;
 
   // Submit enabled only when name, email and message are filled
@@ -49,7 +49,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ onClose }) => {
           "service_qnqab1c",
           "template_jqfvv59",
           formRef.current,
-          "7T1_Ty4C7WFeI74xF"
+          "7T1_Ty4C7WFeI74xF",
         );
       }
 

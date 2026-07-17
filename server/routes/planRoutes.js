@@ -49,7 +49,7 @@ router.put("/:id", async (req, res) => {
     const updated = await Plan.findOneAndUpdate(
       { id: req.params.id },
       req.body,
-      { new: true }
+      { new: true },
     );
 
     if (!updated) return res.status(404).json({ error: "Plan not found" });

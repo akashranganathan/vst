@@ -18,7 +18,7 @@ const PlanSchema = new mongoose.Schema(
     // NEW: Bullet features
     features: [String], // Array of strings like "Digital Audio Workstation (DAW)"
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Plan", PlanSchema);

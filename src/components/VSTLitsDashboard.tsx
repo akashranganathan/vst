@@ -153,12 +153,12 @@ const VSTLitsDashboard: React.FC = () => {
 
   const apiUrl = `${import.meta.env.VITE_API_BASE_URL?.replace(
     /\/+$/,
-    ""
+    "",
   )}/api/lists`;
 
   const showToast = (
     message: string,
-    type: "success" | "error" | "info" = "success"
+    type: "success" | "error" | "info" = "success",
   ) => {
     setToast({ message, type, visible: true });
     setTimeout(() => setToast({ ...toast, visible: false }), 3000);
@@ -190,7 +190,9 @@ const VSTLitsDashboard: React.FC = () => {
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
     }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -204,7 +206,7 @@ const VSTLitsDashboard: React.FC = () => {
       (sec, idx) => ({
         ...sec,
         order: idx + 1,
-      })
+      }),
     );
 
     setSections(newSections);
@@ -580,8 +582,8 @@ const VSTLitsDashboard: React.FC = () => {
               toast.type === "success"
                 ? "bg-green-600 border-green-400"
                 : toast.type === "error"
-                ? "bg-red-600 border-red-400"
-                : "bg-blue-600 border-blue-400"
+                  ? "bg-red-600 border-red-400"
+                  : "bg-blue-600 border-blue-400"
             }`}
           >
             {toast.type === "success" && (

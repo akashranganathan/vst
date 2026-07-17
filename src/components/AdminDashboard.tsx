@@ -56,12 +56,12 @@ const AdminDashboard: React.FC = () => {
 
   const apiUrl = `${import.meta.env.VITE_API_BASE_URL?.replace(
     /\/+$/,
-    ""
+    "",
   )}/api/plans`;
 
   const showToast = (
     message: string,
-    type: "success" | "error" | "info" = "success"
+    type: "success" | "error" | "info" = "success",
   ) => {
     setToast({ message, type, visible: true });
     setTimeout(() => setToast({ ...toast, visible: false }), 3000);
@@ -446,9 +446,9 @@ const AdminDashboard: React.FC = () => {
                           {field === "priceIndia"
                             ? "Price (India)"
                             : field === "priceForeign"
-                            ? "Price (Foreign)"
-                            : field.charAt(0).toUpperCase() +
-                              field.slice(1).replace("Price", " Price")}
+                              ? "Price (Foreign)"
+                              : field.charAt(0).toUpperCase() +
+                                field.slice(1).replace("Price", " Price")}
                         </label>
                         <input
                           value={(editPlan as any)[field] || ""}
@@ -570,9 +570,9 @@ const AdminDashboard: React.FC = () => {
                           {field === "priceIndia"
                             ? "Price (India)"
                             : field === "priceForeign"
-                            ? "Price (Foreign)"
-                            : field.charAt(0).toUpperCase() +
-                              field.slice(1).replace("Price", " Price")}
+                              ? "Price (Foreign)"
+                              : field.charAt(0).toUpperCase() +
+                                field.slice(1).replace("Price", " Price")}
                         </label>
                         <input
                           value={(editPlan as any)[field] || ""}
@@ -677,8 +677,8 @@ const AdminDashboard: React.FC = () => {
               toast.type === "success"
                 ? "bg-green-600 border-green-400"
                 : toast.type === "error"
-                ? "bg-red-600 border-red.times new roman-400"
-                : "bg-blue-600 border-blue-400"
+                  ? "bg-red-600 border-red.times new roman-400"
+                  : "bg-blue-600 border-blue-400"
             }`}
           >
             {toast.type === "success" && <Check className="w-9 h-9" />}

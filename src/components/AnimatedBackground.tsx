@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const AnimatedBackground: React.FC = () => {
   return (
@@ -18,10 +18,10 @@ const AnimatedBackground: React.FC = () => {
           />
         ))}
       </div>
-      
+
       {/* Animated gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-blue-900/20 animate-pulse" />
-      
+
       {/* Moving lines */}
       <div className="absolute inset-0">
         {[...Array(5)].map((_, i) => (
@@ -30,10 +30,10 @@ const AnimatedBackground: React.FC = () => {
             className="absolute h-px bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent animate-pulse"
             style={{
               top: `${20 + i * 20}%`,
-              left: '-100%',
-              right: '-100%',
+              left: "-100%",
+              right: "-100%",
               animationDelay: `${i * 0.5}s`,
-              animationDuration: '4s',
+              animationDuration: "4s",
             }}
           />
         ))}
